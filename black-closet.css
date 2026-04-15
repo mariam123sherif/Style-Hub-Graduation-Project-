@@ -1,0 +1,65 @@
+/* ============================================
+   STYLEHUB — black-closet.css
+   ============================================ */
+
+.bc-hero { background: var(--c-white); padding: 3rem 0 2rem; border-bottom: 1px solid var(--c-gray-lt); }
+.bc-logo-wrap { width: 160px; height: 160px; flex-shrink: 0; border-radius: 50%; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,.15); }
+.bc-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.bc-about { font-size: .87rem; color: var(--c-gray); line-height: 1.7; max-width: 500px; }
+.bc-gallery { display: flex; gap: .6rem; height: 220px; margin-top: 1.5rem; }
+.bc-gal-img { flex: 1; border-radius: var(--r-sm); overflow: hidden; }
+.bc-gal-img img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+.bc-pop { padding: 4rem 0; background: var(--c-white); position: relative; overflow: hidden; }
+.bc-pop-body { font-size: .87rem; color: var(--c-gray); line-height: 1.7; margin-bottom: 1.5rem; max-width: 380px; }
+.blob { position: absolute; right: -50px; bottom: -50px; width: 300px; height: 300px; background: var(--c-dark); border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%; opacity: .06; pointer-events: none; }
+
+.shop-sec { padding: 3rem 0 2rem; border-bottom: 1px solid var(--c-gray-lt); }
+.shop-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.1rem; }
+@media(max-width:992px) { .shop-grid { grid-template-columns: repeat(2,1fr); } }
+.shop-card { border-radius: var(--r-sm); overflow: hidden; cursor: pointer; box-shadow: var(--sh-xs); transition: all .3s; }
+.shop-card:hover { transform: translateY(-4px); box-shadow: var(--sh-md); }
+.shop-card .ib { height: 220px; overflow: hidden; background: var(--c-off); }
+.shop-card .ib img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .5s var(--ease); }
+.shop-card:hover .ib img { transform: scale(1.06); }
+.shop-card .pi { padding: .65rem .7rem; }
+.shop-card .pn { font-size: .78rem; font-weight: 600; color: var(--c-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: .2rem; }
+.shop-card .pp { font-size: .8rem; font-weight: 500; color: var(--c-olive-dk); }
+
+.bc-filter-sec { padding: 2.5rem 0 4rem; }
+.bc-sidebar { background: var(--c-white); border: 1px solid var(--c-gray-lt); border-radius: var(--r); padding: 1.3rem; position: sticky; top: 72px; }
+.f-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--c-dark); margin-bottom: .85rem; }
+.f-group { border-bottom: 1px solid var(--c-gray-lt); padding-bottom: 1.1rem; margin-bottom: 1.1rem; }
+.f-group:last-child { border-bottom: none; margin-bottom: 0; }
+.sz-row { display: flex; flex-wrap: wrap; gap: .35rem; }
+.sz-btn { width: 32px; height: 32px; border: 1px solid var(--c-gray-lt); background: #fff; font-size: .72rem; font-weight: 500; cursor: pointer; border-radius: 4px; transition: all .3s; }
+.sz-btn:hover, .sz-btn.on { background: var(--c-dark); color: #fff; border-color: var(--c-dark); }
+.act-tag { display: inline-flex; align-items: center; gap: .25rem; background: var(--c-dark); color: #fff; font-size: .68rem; padding: .2rem .55rem; border-radius: 100px; margin: .15rem; cursor: pointer; transition: all .3s; border: none; }
+.act-tag:hover { background: var(--c-red); }
+.mat-opt, .col-opt { display: flex; align-items: center; gap: .5rem; font-size: .8rem; color: var(--c-dark); margin-bottom: .4rem; cursor: pointer; }
+.mat-opt input, .col-opt input { accent-color: var(--c-olive); cursor: pointer; }
+.col-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--c-gray-lt); flex-shrink: 0; }
+.price-slider { width: 100%; accent-color: var(--c-olive); }
+.price-vals { display: flex; justify-content: space-between; font-size: .72rem; color: var(--c-gray); margin-top: .3rem; }
+
+.bc-prod-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.1rem; }
+@media(max-width:768px) { .bc-prod-grid { grid-template-columns: repeat(2,1fr); } }
+.bc-card { background: var(--c-white); border-radius: var(--r-sm); overflow: hidden; box-shadow: var(--sh-xs); cursor: pointer; position: relative; transition: all .3s; }
+.bc-card:hover { transform: translateY(-4px); box-shadow: var(--sh-md); }
+.bc-card .ib { position: relative; height: 230px; overflow: hidden; background: var(--c-off); border-radius: 80px 80px 0 0; }
+.bc-card .ib img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .5s var(--ease); }
+.bc-card:hover .ib img { transform: scale(1.06); }
+.bc-card .wish-btn { top: .5rem; right: .5rem; }
+.bc-card .pi { padding: .7rem .85rem; }
+.bc-card .pn { font-size: .78rem; font-weight: 600; color: var(--c-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: .2rem; }
+.bc-card .pp { font-size: .8rem; font-weight: 500; color: var(--c-olive-dk); }
+.bc-card .po { font-size: .72rem; color: var(--c-gray); text-decoration: line-through; margin-right: .3rem; }
+.stars { display: flex; gap: 2px; margin-bottom: .2rem; }
+.stars i { font-size: .63rem; }
+.empty { text-align: center; padding: 3rem 1rem; color: var(--c-gray); }
+.empty i { font-size: 2.5rem; color: var(--c-gray-lt); margin-bottom: .8rem; display: block; }
+
+.btn-out { background: transparent; color: var(--c-dark); border: 1.5px solid var(--c-dark); padding: .6rem 1.4rem; font-size: .72rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 3px; transition: all .3s; width: 100%; }
+.btn-out:hover { background: var(--c-dark); color: #fff; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
