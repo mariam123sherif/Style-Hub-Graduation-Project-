@@ -1,0 +1,684 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useScrollReveal, SHARED_CSS } from "./shared.jsx";
+
+// ─── LOCAL IMAGE PATHS ───
+const IMGS = {
+  p1:  "public/images/BC-abaya-black.png",   // swap full hash filenames as needed
+  p2:  "public/images/hijab-hat.png",
+  p3:  "public/images/men-hoodie2.png",
+  p4:  "public/images/men-hoodie2.png",
+  p5:  "public/images/BC-coat.png",
+  p6:  "public/images/BC-coat.png",
+  p7:  "public/images/BC-coat.png",
+  p8:  "public/images/men-hoodie.png",
+  p9:  "public/images/men-hoodie.png",
+  p10: "public/images/men-hoodie.png",
+  p11: "public/images/men-bule-set.png",
+  p12: "public/images/men-bule-set.png",
+  p13: "public/images/new_arr_1.png",
+  p14: "public/images/BC-coat.png",
+  p15: "public/images/BC-coat.png",
+  p16: "public/images/men-hoodie.png",
+  p17: "public/images/men-hoodie.png",
+  p18: "public/images/BC-abaya-black.png",
+  p19: "public/images/BC-abaya-black.png",
+  p20: "public/images/men-white-shirt.png",
+  newArr1: "/images/new_arr_1.png",
+  newArr2: "/images/new_arr_2.png",
+  newArr3: "/images/new_arr_3.png",
+};
+
+const BRANDS = {
+  brand2: "/images/brand2.avif",
+  brand3: "/images/brand3.png",
+  brand5: "/images/brand5.png",
+};
+
+// ─── PRODUCT DATA (uses real images) ───
+const TOPS_DATA = [
+  { id: "t1", name: "Linen Relaxed Shirt", brand: "Brand Two",   brandLogo: BRANDS.brand2, price: "EGP 850",  img: IMGS.p1  },
+  { id: "t2", name: "Classic White Tee",   brand: "Brand Three", brandLogo: BRANDS.brand3, price: "EGP 420",  img: IMGS.p2  },
+  { id: "t3", name: "Oversized Hoodie",    brand: "Brand Five",  brandLogo: BRANDS.brand5, price: "EGP 1100", img: IMGS.p3  },
+  { id: "t4", name: "Striped Knit Top",    brand: "Brand Two",   brandLogo: BRANDS.brand2, price: "EGP 760",  img: IMGS.p4  },
+  { id: "t5", name: "Zip-Up Fleece",       brand: "Brand Three", brandLogo: BRANDS.brand3, price: "EGP 980",  img: IMGS.p5  },
+  { id: "t6", name: "Cropped Sweater",     brand: "Brand Five",  brandLogo: BRANDS.brand5, price: "EGP 640",  img: IMGS.p6  },
+];
+
+const BOTTOMS_DATA = [
+  { id: "b1", name: "Wide-Leg Trousers",   brand: "Brand Two",   brandLogo: BRANDS.brand2, price: "EGP 920",  img: IMGS.p7  },
+  { id: "b2", name: "Slim Fit Jeans",      brand: "Brand Three", brandLogo: BRANDS.brand3, price: "EGP 790",  img: IMGS.p8  },
+  { id: "b3", name: "Cargo Pants",         brand: "Brand Five",  brandLogo: BRANDS.brand5, price: "EGP 1050", img: IMGS.p9  },
+  { id: "b4", name: "Linen Drawstring",    brand: "Brand Two",   brandLogo: BRANDS.brand2, price: "EGP 680",  img: IMGS.p10 },
+  { id: "b5", name: "Tailored Chinos",     brand: "Brand Three", brandLogo: BRANDS.brand3, price: "EGP 870",  img: IMGS.p11 },
+  { id: "b6", name: "Pleated Trousers",    brand: "Brand Five",  brandLogo: BRANDS.brand5, price: "EGP 990",  img: IMGS.p12 },
+];
+
+const RECOMMENDED_DATA = [
+  { id: "r1", name: "New Arrival Jacket",  brand: "Brand Two",   brandLogo: BRANDS.brand2, price: "EGP 1400", img: IMGS.newArr1 },
+  { id: "r2", name: "New Arrival Dress",   brand: "Brand Three", brandLogo: BRANDS.brand3, price: "EGP 1150", img: IMGS.newArr2 },
+  { id: "r3", name: "New Arrival Set",     brand: "Brand Five",  brandLogo: BRANDS.brand5, price: "EGP 1300", img: IMGS.newArr3 },
+  { id: "r4", name: "Premium Coat",        brand: "Brand Two",   brandLogo: BRANDS.brand2, price: "EGP 2100", img: IMGS.p13 },
+];
+
+// ─── PAGE CSS ───
+const PAGE_CSS = `
+${SHARED_CSS}
+
+.bof-page { background: var(--cream); min-height: 100vh; }
+
+.bof-header {
+  background: #fff;
+  padding: 60px 24px 40px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.bof-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+.bof-header p { color: var(--warm); font-size: .9rem; font-style: italic; }
+
+.bof-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 40px;
+}
+@media (max-width: 1024px) { .bof-main { grid-template-columns: 1fr; } }
+
+/* ── MANNEQUIN PANEL ── */
+.bof-mannequin-panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px;
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+.bof-mannequin-wrap {
+  background: linear-gradient(135deg, #f0ece5 0%, #e8e4dc 100%);
+  border-radius: 6px;
+  aspect-ratio: 3/4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all .3s;
+}
+.bof-mannequin-wrap.drag-over {
+  background: linear-gradient(135deg, #d4e5c9 0%, #c9e4d4 100%);
+  transform: scale(1.02);
+}
+.bof-mannequin-canvas {
+  width: 100%; height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  transition: transform .3s;
+}
+.bof-body-silhouette {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: .15; pointer-events: none;
+}
+.bof-clothing-layer {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all .4s ease; opacity: 0;
+}
+.bof-clothing-layer.visible { opacity: 1; }
+.bof-clothing-layer.top  { top: 33%; width: 48%; }
+.bof-clothing-layer.bottom { top: 57%; width: 42%; }
+
+.bof-trying-on-overlay {
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,.7);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 12px; z-index: 10;
+}
+.bof-trying-on-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--sage);
+  border-radius: 50%;
+  animation: bof-spin 1s linear infinite;
+}
+@keyframes bof-spin { to { transform: rotate(360deg); } }
+.bof-trying-on-text { font-size: .7rem; color: var(--warm); letter-spacing: .1em; }
+
+.bof-zoom-controls {
+  position: absolute; bottom: 12px; right: 12px;
+  display: flex; gap: 6px; z-index: 5;
+}
+.bof-zoom-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #fff; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s; font-size: .9rem; color: var(--dark);
+}
+.bof-zoom-btn:hover { background: var(--sage); border-color: var(--sage); color: #fff; }
+
+.bof-drop-zone-top {
+  position: absolute; top: 18%; left: 22%; right: 22%; height: 36%;
+  border: 2px dashed transparent; border-radius: 8px; transition: all .2s; z-index: 3;
+}
+.bof-drop-zone-top.active { border-color: var(--sage); background: rgba(146,160,121,.1); }
+.bof-drop-zone-bottom {
+  position: absolute; top: 54%; left: 28%; right: 28%; height: 36%;
+  border: 2px dashed transparent; border-radius: 8px; transition: all .2s; z-index: 3;
+}
+.bof-drop-zone-bottom.active { border-color: var(--sage); background: rgba(146,160,121,.1); }
+
+.bof-remove-clothing-btn {
+  position: absolute; top: 8px; right: 8px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--red); color: #fff; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0; transition: all .2s; z-index: 20;
+}
+.bof-clothing-layer:hover .bof-remove-clothing-btn { opacity: 1; }
+.bof-remove-clothing-btn:hover { background: var(--dark); transform: scale(1.1); }
+
+.bof-mannequin-placeholder { text-align: center; color: var(--warm); }
+.bof-mannequin-placeholder svg { width: 120px; height: 120px; opacity: .4; margin-bottom: 12px; }
+.bof-mannequin-placeholder span { font-size: .75rem; letter-spacing: .08em; }
+
+/* Gender Toggle */
+.bof-gender-toggle { display: flex; gap: 12px; margin-bottom: 20px; }
+.bof-gender-btn {
+  flex: 1; border: 1.5px solid var(--border); background: transparent;
+  padding: 10px; border-radius: 6px; cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: .85rem; color: var(--dark);
+}
+.bof-gender-btn:hover { border-color: var(--sage); }
+.bof-gender-btn.active { background: var(--dark); border-color: var(--dark); color: #fff; }
+.bof-gender-btn svg { width: 18px; height: 18px; }
+
+/* Body Data */
+.bof-form-label {
+  font-size: .65rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--warm); margin-bottom: 12px; display: block;
+}
+.bof-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.bof-input-wrap { position: relative; }
+.bof-input {
+  width: 100%; border: 1.5px solid var(--border); border-radius: 4px;
+  padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: .8rem;
+  color: var(--dark); background: var(--cream); outline: none; transition: border-color .2s;
+}
+.bof-input:focus { border-color: var(--sage); background: #fff; }
+.bof-input-label {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-size: .65rem; color: var(--warm); pointer-events: none;
+}
+.bof-generate-model-btn {
+  width: 100%; background: var(--sage); color: #fff; border: none; padding: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: .75rem; letter-spacing: .1em;
+  text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: all .25s;
+}
+.bof-generate-model-btn:hover { background: var(--deep); }
+
+/* Favorites */
+.bof-favorites { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
+.bof-favorites-title {
+  font-size: .85rem; font-weight: 600; color: var(--dark); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 6px;
+}
+.bof-favorites-list { display: flex; flex-direction: column; gap: 12px; }
+.bof-fav-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px;
+  background: var(--cream); border-radius: 6px; transition: all .2s;
+}
+.bof-fav-item:hover { background: #f0ece5; }
+.bof-fav-img { width: 48px; height: 48px; border-radius: 4px; object-fit: cover; background: #fff; }
+.bof-fav-info { flex: 1; min-width: 0; }
+.bof-fav-name { font-size: .75rem; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bof-fav-price { font-size: .7rem; color: var(--warm); font-weight: 500; }
+.bof-fav-remove {
+  width: 24px; height: 24px; border: none; background: transparent; color: var(--warm);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; transition: color .2s;
+}
+.bof-fav-remove:hover { color: var(--red); }
+
+/* ── OUTFIT BUILDER ── */
+.bof-builder { display: flex; flex-direction: column; gap: 48px; }
+.bof-section {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; padding: 32px;
+}
+.bof-section-header { margin-bottom: 24px; }
+.bof-section-num { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--sage); margin-bottom: 6px; }
+.bof-section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 400; color: var(--dark); }
+
+.bof-products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+
+/* ── PRODUCT CARD ── */
+.bof-product-card {
+  border: 1.5px solid var(--border); border-radius: 8px;
+  overflow: hidden; transition: all .25s; position: relative;
+}
+.bof-product-card:hover { border-color: var(--sage); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+.bof-product-card.selected { border-color: var(--dark); background: rgba(146,160,121,.05); }
+
+.bof-card-img-wrap {
+  aspect-ratio: 3/4; overflow: hidden; background: #f8f6f2; position: relative;
+}
+.bof-card-img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .4s; cursor: grab;
+}
+.bof-card-img:active { cursor: grabbing; }
+.bof-product-card:hover .bof-card-img { transform: scale(1.05); }
+
+.bof-drag-hint {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(0,0,0,.6); color: #fff; padding: 6px 12px;
+  border-radius: 4px; font-size: .65rem; opacity: 0; transition: opacity .2s;
+  pointer-events: none; white-space: nowrap;
+}
+.bof-card-img-wrap:hover .bof-drag-hint { opacity: 1; }
+
+.bof-card-heart {
+  position: absolute; top: 10px; right: 10px;
+  width: 32px; height: 32px; border-radius: 50%; background: #fff; border: none;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--warm); transition: all .2s; box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+.bof-card-heart:hover { color: var(--red); transform: scale(1.1); }
+.bof-card-heart.active { color: var(--red); }
+
+/* Brand logo badge */
+.bof-card-brand-logo {
+  position: absolute; bottom: 10px; left: 10px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  border: 1.5px solid var(--border);
+}
+.bof-card-brand-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+
+.bof-card-body { padding: 14px; }
+.bof-card-brand {
+  font-size: .55rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--warm); margin-bottom: 4px;
+}
+.bof-card-name {
+  font-family: 'Cormorant Garamond', serif; font-size: .95rem;
+  color: var(--dark); margin-bottom: 6px; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.bof-card-price { font-size: .8rem; font-weight: 600; color: var(--dark); }
+.bof-card-select {
+  width: 100%; background: var(--dark); color: #fff; border: none; padding: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: .65rem; letter-spacing: .1em;
+  text-transform: uppercase; cursor: pointer; margin-top: 10px;
+  border-radius: 3px; transition: all .2s;
+}
+.bof-card-select:hover { background: var(--sage); }
+.bof-card-select.active { background: var(--sage); }
+
+/* Recommended */
+.bof-recommended { text-align: center; }
+.bof-recommended-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.8rem;
+  font-weight: 400; color: var(--dark); margin-bottom: 32px;
+}
+.bof-recommended-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+
+/* Complete Bar */
+.bof-complete-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--dark); color: #fff; padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  transform: translateY(100%); transition: transform .3s; z-index: 1000;
+}
+.bof-complete-bar.visible { transform: translateY(0); }
+.bof-complete-info { display: flex; align-items: center; gap: 16px; }
+.bof-complete-count {
+  background: var(--sage); color: #fff; width: 32px; height: 32px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 600;
+}
+.bof-complete-text { font-size: .85rem; }
+.bof-complete-btn {
+  background: #fff; color: var(--dark); border: none; padding: 10px 24px;
+  font-family: 'DM Sans', sans-serif; font-size: .75rem; letter-spacing: .1em;
+  text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: all .2s;
+}
+.bof-complete-btn:hover { background: var(--sage); color: #fff; }
+`;
+
+// ─── ICONS ───
+const FemaleIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="8" r="4"/><path d="M12 12v8"/><path d="M9 15l6 0"/>
+  </svg>
+);
+const MaleIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="10" cy="8" r="4"/><path d="M14 12l6-6"/><path d="M20 6l-6 0"/>
+    <path d="M12 12v8"/><path d="M9 15l6 0"/>
+  </svg>
+);
+const HeartIcon = ({ filled }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.0 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+  </svg>
+);
+const MannequinIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="4" r="2.5"/><path d="M12 6.5v5"/><path d="M8 9h8"/>
+    <path d="M12 11.5v6"/><path d="M9 14h6"/><path d="M12 17.5v3"/><path d="M9 20h6"/>
+  </svg>
+);
+const CloseIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+);
+
+// ─── PRODUCT CARD ───
+const ProductCard = ({ product, onSelect, selected, type, wishlist, toggleWish, addRef, onDragStart, onDragOver, onDrop }) => (
+  <div className={`bof-product-card ${selected?.id === product.id ? 'selected' : ''}`} ref={addRef}>
+    <div className="bof-card-img-wrap">
+      <img
+        src={product.img}
+        alt={product.name}
+        className="bof-card-img"
+        draggable
+        onDragStart={(e) => onDragStart(e, product, type)}
+        onError={(e) => { e.target.src = "/images/BRANDING_MAIN-01.webp"; }}
+      />
+      <div className="bof-drag-hint">👆 Drag to try on</div>
+
+      {/* Brand Logo Badge */}
+      <div className="bof-card-brand-logo">
+        <img
+          src={product.brandLogo}
+          alt={product.brand}
+          onError={(e) => { e.target.style.display = 'none'; }}
+        />
+      </div>
+
+      <button
+        className={`bof-card-heart ${wishlist?.includes(product.id) ? 'active' : ''}`}
+        onClick={() => toggleWish && toggleWish(product.id)}
+      >
+        <HeartIcon filled={wishlist?.includes(product.id)} />
+      </button>
+    </div>
+    <div className="bof-card-body">
+      <div className="bof-card-brand">{product.brand}</div>
+      <div className="bof-card-name">{product.name}</div>
+      <div className="bof-card-price">{product.price}</div>
+      <button
+        className={`bof-card-select ${selected?.id === product.id ? 'active' : ''}`}
+        onClick={() => onSelect(product)}
+      >
+        {selected?.id === product.id ? '✓ Selected' : 'Select'}
+      </button>
+    </div>
+  </div>
+);
+
+// ─── MAIN PAGE ───
+export default function BuildOutfitPage({ wishlist = [], toggleWish, cartCount = 0, addToCart, toast }) {
+  const addRef = useScrollReveal();
+
+  const [gender, setGender] = useState("female");
+  const [bodyData, setBodyData] = useState({ height: "", weight: "", chest: "", waist: "", hips: "", inseam: "", shoulderWidth: "", armLength: "" });
+  const [selectedTop, setSelectedTop] = useState(null);
+  const [selectedBottom, setSelectedBottom] = useState(null);
+  const [favorites, setFavorites] = useState([]);
+  const [isTryingOn, setIsTryingOn] = useState(false);
+  const [mannequinZoom, setMannequinZoom] = useState(1);
+  const [draggedItem, setDraggedItem] = useState(null);
+
+  const handleBodyChange = (field, value) => setBodyData(prev => ({ ...prev, [field]: value }));
+
+  const handleGenerateModel = () => {
+    setIsTryingOn(true);
+    setTimeout(() => { setIsTryingOn(false); toast?.("3D Model generated! Ready to try on clothes."); }, 1500);
+  };
+
+  const addToFavs = (product) => {
+    if (!favorites.find(f => f.id === product.id)) setFavorites(prev => [...prev, product]);
+  };
+
+  const handleSelectTop = (product) => {
+    setIsTryingOn(true); setSelectedTop(product); addToFavs(product);
+    setTimeout(() => { setIsTryingOn(false); toast?.("Top selected!"); }, 800);
+  };
+
+  const handleSelectBottom = (product) => {
+    setIsTryingOn(true); setSelectedBottom(product); addToFavs(product);
+    setTimeout(() => { setIsTryingOn(false); toast?.("Bottom selected!"); }, 800);
+  };
+
+  const handleDragStart = (e, item, type) => {
+    setDraggedItem({ ...item, dragType: type });
+    e.dataTransfer.effectAllowed = "copy";
+  };
+  const handleDragOver = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; };
+  const handleDrop = (e, dropType) => {
+    e.preventDefault();
+    if (draggedItem) {
+      if (dropType === "top"    && draggedItem.dragType === "top")    handleSelectTop(draggedItem);
+      if (dropType === "bottom" && draggedItem.dragType === "bottom") handleSelectBottom(draggedItem);
+      setDraggedItem(null);
+    }
+  };
+
+  const handleZoomIn    = () => setMannequinZoom(p => Math.min(p + 0.25, 2));
+  const handleZoomOut   = () => setMannequinZoom(p => Math.max(p - 0.25, 0.5));
+  const handleResetZoom = () => setMannequinZoom(1);
+
+  const removeFromFavorites = (id) => {
+    setFavorites(prev => prev.filter(f => f.id !== id));
+    if (selectedTop?.id    === id) setSelectedTop(null);
+    if (selectedBottom?.id === id) setSelectedBottom(null);
+  };
+
+  const sharedCardProps = { wishlist, toggleWish, addRef, onDragStart: handleDragStart, onDragOver: handleDragOver, onDrop: handleDrop };
+
+  return (
+    <>
+      <style>{PAGE_CSS}</style>
+
+      <div className="bof-header">
+        <h1>Build Your Perfect Outfit</h1>
+        <p>Create your perfect look from local brands</p>
+      </div>
+
+      <div className="bof-main">
+        {/* ── LEFT: Mannequin Panel ── */}
+        <div className="bof-left-panel">
+          <div className="bof-mannequin-panel">
+            <div
+              className={`bof-mannequin-wrap ${draggedItem ? 'drag-over' : ''}`}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, draggedItem?.dragType || 'full')}
+            >
+              <div className="bof-mannequin-canvas" style={{ transform: `scale(${mannequinZoom})` }}>
+
+                {/* Body silhouette */}
+                <svg className="bof-body-silhouette" width="200" height="400" viewBox="0 0 200 400">
+                  {gender === 'female' ? (
+                    <>
+                      <ellipse cx="100" cy="50" rx="25" ry="30" fill="#2d2d2d"/>
+                      <path d="M75 80 Q60 100 55 140 Q50 180 55 220 Q60 260 50 320 L45 380 L70 380 L80 300 Q85 260 90 240 L95 380 L120 380 L130 240 Q135 260 140 300 L150 380 L175 380 L170 320 Q160 260 165 220 Q170 180 165 140 Q160 100 145 80 Z" fill="#2d2d2d"/>
+                    </>
+                  ) : (
+                    <>
+                      <ellipse cx="100" cy="50" rx="28" ry="32" fill="#2d2d2d"/>
+                      <path d="M72 82 Q58 100 52 130 Q48 170 52 200 Q56 240 48 280 L42 380 L68 380 L78 280 Q82 240 88 220 L92 380 L128 380 L132 220 Q138 240 142 280 L152 380 L178 380 L172 280 Q164 240 168 200 Q172 170 168 130 Q162 100 148 82 Z" fill="#2d2d2d"/>
+                    </>
+                  )}
+                </svg>
+
+                {/* Top layer */}
+                {selectedTop && (
+                  <div className="bof-clothing-layer top visible" onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, 'top')}>
+                    <button className="bof-remove-clothing-btn" onClick={() => setSelectedTop(null)} title="Remove top"><CloseIcon /></button>
+                    <img src={selectedTop.img} alt={selectedTop.name} style={{ width: '100%', height: 'auto', borderRadius: '4px' }} onError={(e) => { e.target.src = "/images/BRANDING_MAIN-01.webp"; }} />
+                  </div>
+                )}
+
+                {/* Bottom layer */}
+                {selectedBottom && (
+                  <div className="bof-clothing-layer bottom visible" onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, 'bottom')}>
+                    <button className="bof-remove-clothing-btn" onClick={() => setSelectedBottom(null)} title="Remove bottom"><CloseIcon /></button>
+                    <img src={selectedBottom.img} alt={selectedBottom.name} style={{ width: '100%', height: 'auto', borderRadius: '4px' }} onError={(e) => { e.target.src = "/images/BRANDING_MAIN-01.webp"; }} />
+                  </div>
+                )}
+
+                {/* Drop zones */}
+                <div className={`bof-drop-zone-top    ${draggedItem?.dragType === 'top'    ? 'active' : ''}`} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, 'top')} />
+                <div className={`bof-drop-zone-bottom ${draggedItem?.dragType === 'bottom' ? 'active' : ''}`} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, 'bottom')} />
+
+                {isTryingOn && (
+                  <div className="bof-trying-on-overlay">
+                    <div className="bof-trying-on-spinner" />
+                    <span className="bof-trying-on-text">TRYING ON...</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="bof-zoom-controls">
+                <button className="bof-zoom-btn" onClick={handleZoomOut} title="Zoom out">−</button>
+                <button className="bof-zoom-btn" onClick={handleResetZoom} title="Reset">⟲</button>
+                <button className="bof-zoom-btn" onClick={handleZoomIn}  title="Zoom in">+</button>
+              </div>
+
+              {!selectedTop && !selectedBottom && !isTryingOn && (
+                <div className="bof-mannequin-placeholder">
+                  <MannequinIcon />
+                  <span>Drag items here or select from below</span>
+                </div>
+              )}
+            </div>
+
+            {/* Gender toggle */}
+            <div className="bof-gender-toggle">
+              <button className={`bof-gender-btn ${gender === 'female' ? 'active' : ''}`} onClick={() => setGender('female')}><FemaleIcon /> Female</button>
+              <button className={`bof-gender-btn ${gender === 'male'   ? 'active' : ''}`} onClick={() => setGender('male')}><MaleIcon /> Male</button>
+            </div>
+
+            {/* Body data */}
+            <span className="bof-form-label">Enter Your Body Data</span>
+            <div className="bof-form-grid">
+              {[
+                { field: 'height',       placeholder: '165', unit: 'cm' },
+                { field: 'weight',       placeholder: '55',  unit: 'kg' },
+                { field: 'chest',        placeholder: '85',  unit: 'cm' },
+                { field: 'waist',        placeholder: '70',  unit: 'cm' },
+                { field: 'hips',         placeholder: '90',  unit: 'cm' },
+                { field: 'inseam',       placeholder: '78',  unit: 'cm' },
+                { field: 'shoulderWidth',placeholder: '40',  unit: 'cm' },
+                { field: 'armLength',    placeholder: '58',  unit: 'cm' },
+              ].map(({ field, placeholder, unit }) => (
+                <div key={field} className="bof-input-wrap">
+                  <input type="text" className="bof-input" placeholder={placeholder}
+                    value={bodyData[field]} onChange={(e) => handleBodyChange(field, e.target.value)} />
+                  <span className="bof-input-label">{unit}</span>
+                </div>
+              ))}
+            </div>
+            <button className="bof-generate-model-btn" onClick={handleGenerateModel}>Generate 3D Model</button>
+
+            {/* Favorites list */}
+            {favorites.length > 0 && (
+              <div className="bof-favorites">
+                <div className="bof-favorites-title"><HeartIcon filled /> Your Favorites</div>
+                <div className="bof-favorites-list">
+                  {favorites.map(item => (
+                    <div key={item.id} className="bof-fav-item">
+                      <img src={item.img} alt={item.name} className="bof-fav-img" onError={(e) => { e.target.src = "/images/BRANDING_MAIN-01.webp"; }} />
+                      <div className="bof-fav-info">
+                        <div className="bof-fav-name">{item.name}</div>
+                        <div className="bof-fav-price">{item.price}</div>
+                      </div>
+                      <button className="bof-fav-remove" onClick={() => removeFromFavorites(item.id)}><CloseIcon /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── RIGHT: Builder ── */}
+        <div className="bof-builder">
+
+          {/* Choose Top */}
+          <div className="bof-section" ref={addRef}>
+            <div className="bof-section-header">
+              <div className="bof-section-num">1. Choose Your Items</div>
+              <h2 className="bof-section-title">Choose Top</h2>
+            </div>
+            <div className="bof-products-grid">
+              {TOPS_DATA.map(product => (
+                <ProductCard key={product.id} product={product}
+                  onSelect={handleSelectTop} selected={selectedTop} type="top" {...sharedCardProps} />
+              ))}
+            </div>
+          </div>
+
+          {/* Choose Bottom */}
+          <div className="bof-section" ref={addRef}>
+            <div className="bof-section-header">
+              <div className="bof-section-num">2. Complete the Look</div>
+              <h2 className="bof-section-title">Choose Bottom</h2>
+            </div>
+            <div className="bof-products-grid">
+              {BOTTOMS_DATA.map(product => (
+                <ProductCard key={product.id} product={product}
+                  onSelect={handleSelectBottom} selected={selectedBottom} type="bottom" {...sharedCardProps} />
+              ))}
+            </div>
+          </div>
+
+          {/* Recommended */}
+          <div className="bof-section bof-recommended" ref={addRef}>
+            <h2 className="bof-recommended-title">Recommended For You</h2>
+            <div className="bof-recommended-grid">
+              {RECOMMENDED_DATA.map(product => (
+                <ProductCard key={product.id} product={product}
+                  onSelect={() => { addToFavs(product); toast?.("Added to favorites!"); }}
+                  selected={null} type="recommendation" {...sharedCardProps} />
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Complete Outfit Bar */}
+      {selectedTop && selectedBottom && (
+        <div className="bof-complete-bar visible">
+          <div className="bof-complete-info">
+            <div className="bof-complete-count">{favorites.length}</div>
+            <span className="bof-complete-text">Outfit complete! Add to cart or save for later.</span>
+          </div>
+          <button className="bof-complete-btn" onClick={() => { addToCart?.(); toast?.("Outfit added to cart!"); }}>
+            Add to Cart
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
